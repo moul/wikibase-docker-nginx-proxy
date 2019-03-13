@@ -1,0 +1,42 @@
+// replace domain.com with your domain
+
+version: '3'
+
+services:
+  wikibase:
+    networks:
+      service-proxy:
+      default:
+        aliases:
+          - wiki.domain.com
+    environment:
+      - VIRTUAL_HOST=wiki.domain.com
+      - VIRTUAL_PORT=80
+    volumes:
+      - ../override/wikibase:/override
+    command: /override/entrypoint.sh
+  wdqs-frontend:
+    networks:
+      service-proxy:
+    environment:
+      - WIKIBASE_HOST=wiki.domain.com
+      #- WDQS_HOST=wdqs.m.42.am
+      - VIRTUAL_HOST=wdqs-frontend-wiki.domain.com
+      - VIRTUAL_PORT=80
+  wdqs-updater:
+    environment:
+      WIKIBASE_HOST: wiki.domain.com
+  wdqs:
+    environment:
+      - WIKIBASE_HOST=wiki.domain.com
+  quickstatements:
+    networks:
+      service-proxy:
+    environment:
+      - WIKIBASE_SCHEME_AND_HOST=http://wikibase
+      - VIRTUAL_HOST=quickstatements-wiki.domain.com
+      - VIRTUAL_PORT=80
+      
+networks:
+  service-proxy:
+    external: true
